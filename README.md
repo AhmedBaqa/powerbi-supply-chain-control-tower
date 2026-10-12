@@ -1,6 +1,6 @@
 # Supply Chain Control Tower | Executive Power BI Dashboard
 
-A professional, executive-ready **2-page Supply Chain Control Tower** built in Power BI to provide end-to-end SLA visibility, carrier cost efficiency tracking, and micro-level root cause exception analysis.
+An interactive, professional, executive-ready **2-page Supply Chain Control Tower** built in Power BI to provide end-to-end SLA visibility, carrier cost efficiency tracking, and micro-level root cause exception analysis.
 
 ---
 
