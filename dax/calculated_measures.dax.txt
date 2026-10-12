@@ -1,0 +1,64 @@
+-- ====================================================================
+-- PROJECT: Supply Chain Control Tower - Power BI Dashboard
+-- DESCRIPTION: Core calculated columns and measures for SLA and delay analytics
+-- ====================================================================
+
+-----------------------------------------------------------------------
+-- 1. CALCULATED COLUMNS
+-----------------------------------------------------------------------
+
+-- Categorizes late shipments into operational severity buckets
+Delay_Severity_Bucket = 
+VAR DaysLate = logistics_control_tower_data[Actual_Delivery_Days] - logistics_control_tower_data[Promised_Delivery_Days]
+RETURN
+IF(
+    logistics_control_tower_data[Shipment_Status] = "Delivered Late",
+    SWITCH(
+        TRUE(),
+        DaysLate <= 2, "1-2 Days Late (Minor)",
+        DaysLate <= 5, "3-5 Days Late (Moderate)",
+        "5+ Days Late (Critical)"
+    ),
+    BLANK()
+)
+
+
+-----------------------------------------------------------------------
+-- 2. CORE MEASURES (_Measures Table)
+-----------------------------------------------------------------------
+
+-- Total volume of shipments processed
+Total Shipments = COUNTROWS(logistics_control_tower_data)
+
+
+-- Total volume of shipments failing SLA delivery deadlines
+Delayed Shipments = 
+CALCULATE(
+    [Total Shipments],
+    logistics_control_tower_data[Shipment_Status] = "Delivered Late"
+)
+
+
+-- Overall On-Time In-Full (OTIF) Compliance Percentage
+OTIF % = 
+DIVIDE(
+    CALCULATE(
+        [Total Shipments],
+        logistics_control_tower_data[OTIF_Compliance_Flag] = 1
+    ),
+    [Total Shipments],
+    0
+)
+
+
+-- Total financial penalty or cost impact driven by supply chain exceptions
+Cost Impact of Delays = SUM(logistics_control_tower_data[Delay_Cost])
+
+
+-- Delay Rate percentage across filtered context
+Delay Rate % = 
+DIVIDE(
+    [Delayed Shipments],
+    [Total Shipments],
+    0
+)
